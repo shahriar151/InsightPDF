@@ -17,10 +17,18 @@ def get_llm():
 
 # 2. Embeddings (Running locally on CPU)
 #This embeddings model is better(BAAI/bge-small-en-v1.5)
-def get_embeddings():
-    # specifically using the model you requested
-    return HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+# src/rag_engine.py
 
+# 2. Embeddings (Running locally on CPU)
+def get_embeddings():
+    # Ensuring the model is correctly referenced
+    # We explicitly use the model name that is confirmed to work with HuggingFaceEmbeddings
+    # If this still fails, the error is likely due to memory limits when loading the model.
+    return HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2",
+        # The 'model_kwargs' is optional but ensures it's set up for CPU usage
+        model_kwargs={'device': 'cpu'}
+    )
 # 3. Process Document & Create Vector Store
 # 3. Process Document & Create Vector Store
 def process_document(pdf_path):

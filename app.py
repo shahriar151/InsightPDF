@@ -1,16 +1,29 @@
 import streamlit as st
 import os
 import tempfile
-from dotenv import load_dotenv
-# We wrap the import in try-except to handle local vs cloud paths comfortably
+# Note: load_dotenv() is removed/commented out here 
+# because we rely purely on st.secrets to populate os.environ 
+# in the cloud environment.
+
+# 1. --- ENVIRONMENT VARIABLE SETUP (Must be early) ---
+# We check if the key is in st.secrets and then manually set it 
+# in the os.environ dictionary so LangChain can pick it up.
+if "GROQ_API_KEY" in st.secrets:
+    os.environ["GROQ_API_KEY"] = st.secrets["GROQ_API_KEY"]
+
+if "APP_PASSWORD" in st.secrets:
+    # No need to set APP_PASSWORD in os.environ, st.secrets is enough for the check_password function
+    pass 
+# ----------------------------------------------------
+
+# 2. --- RAG ENGINE IMPORT (Must come AFTER env setup) ---
 try:
+    # Standard import path
     from src.rag_engine import process_document, create_rag_chain
 except ImportError:
-    # This helps if python doesn't recognize the src path immediately
+    # Fallback import path
     from rag_engine import process_document, create_rag_chain
 
-# Load environment variables
-load_dotenv()
 
 # Page Config
 st.set_page_config(page_title="InsightPDF", layout="wide")
@@ -21,11 +34,9 @@ st.title("📄 InsightPDF: Private Document Assistant")
 def check_password():
     """Returns `True` if the user had the correct password."""
     
-    # Check if we are running locally (no secrets) or on cloud
-    # If strictly local development, we can skip password or hardcode a dev one
+    # Allows local testing if secrets.toml is not present
     if "APP_PASSWORD" not in st.secrets:
-        # If no secret is set (like locally without .streamlit/secrets.toml), let it pass
-        # OR better: Warn the user. For this example, we proceed if no secret is found locally.
+        st.warning("Running without password protection (Local Dev Mode)")
         return True
 
     if "password_correct" not in st.session_state:
@@ -37,14 +48,14 @@ def check_password():
         
         if password_input == st.secrets["APP_PASSWORD"]:
             st.session_state.password_correct = True
-            st.rerun()  # Reload app to show content
+            st.rerun() 
         elif password_input:
             st.sidebar.error("Incorrect Password")
             
     return st.session_state.password_correct
 
 if not check_password():
-    st.stop()  # Stop execution if password is wrong
+    st.stop() 
 # ---------------------------
 
 st.markdown("Powered by **Llama-3.3-70B** & **LangChain**")
