@@ -1,0 +1,12 @@
+# Ignore Streamlit secrets
+.streamlit/secrets.toml
+
+# Ignore Environment variables
+.env
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore the local Chroma Vector Database
+chroma_db/
