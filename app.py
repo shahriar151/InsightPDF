@@ -1,42 +1,30 @@
 import streamlit as st
 import os
 import tempfile
-# Note: load_dotenv() is removed/commented out here 
-# because we rely purely on st.secrets to populate os.environ 
-# in the cloud environment.
 
-# 1. --- ENVIRONMENT VARIABLE SETUP (Must be early) ---
-# We check if the key is in st.secrets and then manually set it 
-# in the os.environ dictionary so LangChain can pick it up.
+# 1. --- PAGE CONFIG ---
+st.set_page_config(page_title="InsightPDF", layout="wide")
+st.title("📄 InsightPDF: Private Document Assistant")
+
+# 2. --- SECRETS SETUP ---
+# Grab the API Key directly from secrets
 if "GROQ_API_KEY" in st.secrets:
-    os.environ["GROQ_API_KEY"] = st.secrets["GROQ_API_KEY"]
+    groq_api_key = st.secrets["GROQ_API_KEY"]
+else:
+    st.error("GROQ_API_KEY not found in Streamlit Secrets!")
+    st.stop()
 
-if "APP_PASSWORD" in st.secrets:
-    # No need to set APP_PASSWORD in os.environ, st.secrets is enough for the check_password function
-    pass 
-# ----------------------------------------------------
-
-# 2. --- RAG ENGINE IMPORT (Must come AFTER env setup) ---
+# 3. --- RAG ENGINE IMPORT ---
 try:
-    # Standard import path
     from src.rag_engine import process_document, create_rag_chain
 except ImportError:
-    # Fallback import path
     from rag_engine import process_document, create_rag_chain
-
-
-# Page Config
-st.set_page_config(page_title="InsightPDF", layout="wide")
-
-st.title("📄 InsightPDF: Private Document Assistant")
 
 # --- PASSWORD PROTECTION ---
 def check_password():
-    """Returns `True` if the user had the correct password."""
-    
-    # Allows local testing if secrets.toml is not present
     if "APP_PASSWORD" not in st.secrets:
-        st.warning("Running without password protection (Local Dev Mode)")
+        # If running locally without secrets.toml, you might want to bypass or warn
+        # But for Cloud deployment, this ensures security
         return True
 
     if "password_correct" not in st.session_state:
@@ -56,7 +44,6 @@ def check_password():
 
 if not check_password():
     st.stop() 
-# ---------------------------
 
 st.markdown("Powered by **Llama-3.3-70B** & **LangChain**")
 
@@ -73,7 +60,8 @@ with st.sidebar:
         with st.spinner("Analyzing document... (Computing Embeddings)"):
             if "vectorstore" not in st.session_state:
                 st.session_state.vectorstore = process_document(tmp_path)
-                st.session_state.rag_chain = create_rag_chain(st.session_state.vectorstore)
+                # MODIFIED: Passing the API key here
+                st.session_state.rag_chain = create_rag_chain(st.session_state.vectorstore, groq_api_key)
                 st.success("Document Processed!")
             
             os.remove(tmp_path)

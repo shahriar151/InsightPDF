@@ -1,20 +1,10 @@
-# Final requirements.txt for InsightPDF RAG App
-
-# Streamlit UI
-streamlit==1.32.0
-
-# Core LLM/RAG Framework
-langchain==0.1.16
-langchain-core==0.1.52
-langchain-community==0.0.32
-
-# Integrations
-langchain-groq==0.1.3
-groq==0.8.0  # <--- NEW: Required for the base Groq API interaction
-langchain-huggingface==0.0.1
-
-# Utilities
-chromadb==0.4.24
-pypdf==4.2.0
-python-dotenv==1.0.1
-sentence-transformers==2.6.1
+streamlit
+langchain
+langchain-groq
+langchain-community
+langchain-huggingface
+chromadb
+pypdf
+sentence-transformers
+pydantic
+pysqlite3-binary
