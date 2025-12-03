@@ -1,21 +1,11 @@
-# Final requirements.txt for InsightPDF RAG App
-
-# Streamlit UI
-streamlit==1.32.0
-
-# Core LLM/RAG Framework
-langchain==0.1.16
-langchain-core==0.1.52
-langchain-community==0.0.32
-
-# Integrations
+streamlit
+langchain==0.2.1
 langchain-groq==0.1.3
-groq==0.8.0  # <--- NEW: Required for the base Groq API interaction
-langchain-huggingface==0.0.1
-
-# Utilities
+langchain-community==0.0.32
+langchain-core==0.2.3
+langchain-huggingface==0.0.3
 chromadb==0.4.24
-pypdf==4.2.0
-python-dotenv==1.0.1
-sentence-transformers==2.6.1
-pysqlite3-binary       # <-- Keep this fix for the ChromaDB issue!
+pypdf
+sentence-transformers
+pydantic==1.10.13  # <-- Crucial: Pinning to the last stable Pydantic v1 version
+pysqlite3-binary   # <-- Keep this for the ChromaDB issue
