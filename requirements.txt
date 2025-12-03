@@ -1,10 +1,10 @@
 streamlit
-langchain
-langchain-groq
-langchain-community
-langchain-huggingface
+langchain              # <-- CRUCIAL: Must be present for .chains and the chain functions
+langchain-groq         # For ChatGroq
+langchain-community    # For PyPDFLoader, Chroma, HuggingFaceEmbeddings
+langchain-huggingface  # You are using this, so it should be listed.
 chromadb
 pypdf
 sentence-transformers
-pydantic
-pysqlite3-binary
+pydantic               # Good to keep for stability
+pysqlite3-binary       # <-- Keep this fix for the ChromaDB issue!
