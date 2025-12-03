@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+import sys
 import tempfile
 
 # 1. --- PAGE CONFIG ---
@@ -15,10 +16,34 @@ else:
     st.stop()
 
 # 3. --- RAG ENGINE IMPORT ---
+import sys
+# --- FIX FOR STREAMLIT DEPLOYMENT PATH ---
+# This adds the project root to the system path, allowing imports from 'src'.
+# The project root on Streamlit Cloud is '/mount/src/insightpdf'.
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'src')))
+
+# 2. --- RAG ENGINE IMPORT (Must come AFTER env setup) ---
+# Now we can just use the absolute import path 'src.rag_engine'
+# or since we added 'src' to the path, we can try to import directly.
 try:
-    from src.rag_engine import process_document, create_rag_chain
-except ImportError:
     from rag_engine import process_document, create_rag_chain
+except ModuleNotFoundError:
+    # If the app is run from a location where 'src' is not the root, 
+    # the explicit 'src.' prefix might be needed, but the sys.path fix 
+    # usually allows the direct name to work if the file is in 'src'.
+    # Let's use the explicit 'src.rag_engine' import to be safe if 'src'
+    # is the actual package name.
+
+    # We will prioritize the safer explicit import since we modified the path.
+    # If the first import fails, it means the structure is slightly different 
+    # than assumed, so we try the other way.
+    
+    # Try the explicit import from 'src' as the package name:
+    try:
+        from src.rag_engine import process_document, create_rag_chain
+    except ImportError as e:
+        st.error(f"Failed to import rag_engine. Please check file structure. Error: {e}")
+        st.stop()
 
 # --- PASSWORD PROTECTION ---
 def check_password():
