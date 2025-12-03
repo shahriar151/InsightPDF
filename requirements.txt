@@ -1,9 +1,10 @@
-# requirements.txt
 streamlit
-langchain
-langchain-groq
+langchain==0.2.1
+langchain-groq==0.1.9
 langchain-community
 langchain-huggingface
-chromadb
+chromadb==0.4.24
 pypdf
 sentence-transformers
+pydantic<2
+pysqlite3-binary
