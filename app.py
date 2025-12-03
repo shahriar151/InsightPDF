@@ -15,6 +15,14 @@ else:
     st.error("GROQ_API_KEY not found in Streamlit Secrets!")
     st.stop()
 
+if not groq_api_key or len(groq_api_key) < 10: 
+    st.error("CRITICAL ERROR: GROQ_API_KEY is empty or too short. Check your Streamlit Secrets Dashboard!")
+    st.stop()
+else:
+    # Use st.sidebar.success or st.info here, DO NOT display the key publicly!
+    st.info("API Key loaded successfully from Streamlit Secrets.") 
+# >>> END OF DEBUG BLOCK <<<
+
 # 3. --- RAG ENGINE IMPORT ---
 import sys
 # --- FIX FOR STREAMLIT DEPLOYMENT PATH ---
